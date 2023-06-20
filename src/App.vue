@@ -18,9 +18,41 @@
         <td>{{ index + 1 }}</td>
         <td>{{ row.goods_name }}</td>
         <td>{{ row.goods_price }}</td>
-        <td>{{ row.tags.join('，') }}</td>
         <td>
-          <button type="button" class="btn-danger btn-sm">删除</button>
+          <input
+            type="text"
+            class="form-control form-control-sm from-ipt"
+            v-if="row.inputVisible"
+            v-focus
+            v-model.trim="row.inputValue"
+            @blur="addTag(row)"
+            @keyup.enter="addTag(row)"
+            @keyup.esc=";(row.inputVisible = false), (row.inputValue = '')"
+          />
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            @click="row.inputVisible = 'true'"
+            v-else
+          >
+            +添加
+          </button>
+          <span
+            class="badge badge-warning ml-2"
+            v-for="item in row.tags"
+            :key="item"
+          >
+            {{ item }}
+          </span>
+        </td>
+        <td>
+          <button
+            type="button"
+            class="btn-danger btn-sm"
+            @click="remove_goods(row.id)"
+          >
+            删除
+          </button>
         </td>
       </template>
     </Table>
@@ -45,13 +77,36 @@ export default {
       const { data: res } = await this.$http.get('/api/get')
       if (res.status !== 0) return console.log('商品获取失败')
       this.goodslist = res.data
+    },
+    remove_goods(id) {
+      this.goodslist = this.goodslist.filter((x) => x.id !== id)
+    },
+    addTag(row) {
+      const val = row.inputValue
+      row.inputValue = ''
+      row.inputVisible = false
+
+      if (!val || row.tags.indexOf(val) !== -1) return
+      row.tags.push(val)
     }
   },
   created() {
     // 发起请求
     this.getGoodsList()
+  },
+  directives: {
+    focus(el) {
+      el.focus()
+    }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/.form-control {
+  width: 80px;
+}
+.from-ipt {
+  display: inline;
+}
+</style>

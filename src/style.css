@@ -4,3 +4,10 @@
 body{
   padding:8px;
 }
+.table th, .table td{
+  vertical-align: text-bottom;
+}
+.form-check-input {
+  margin-top: -0.8rem;
+  margin-left: -0.6rem;
+}
